@@ -12,8 +12,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ReceiptService {
@@ -29,6 +29,26 @@ public class ReceiptService {
 
     public List<Receipt> getAllReceipts() {
         return receiptRepo.findAll();
+    }
+
+    public void redeemVoucher(String uuid) throws NoSuchElementException {
+        Optional<Receipt> optionalReceipt = receiptRepo.findByUuid(uuid);
+
+        if (optionalReceipt.isEmpty()) {
+            throw new NoSuchElementException("Voucher inexistent!");
+        }
+
+        Receipt receipt = optionalReceipt.get();
+        if (receipt.isUsed()) {
+            throw new IllegalStateException("Voucher deja folosit!");
+        }
+
+        if (receipt.getLocalDateTime().isBefore(LocalDateTime.now().minusDays(30))) {
+            throw new IllegalStateException("Voucher mai vechi de 30 de zile!");
+        }
+
+        receipt.setUsed(true);
+        receiptRepo.save(receipt);
     }
 
     public Receipt getTotalReceiptByDate(LocalDate localDate) {
@@ -71,7 +91,7 @@ public class ReceiptService {
 
         String filePath = pdfService.generateReceiptPdf(savedReceipt);
 
-        pdfPrintService.printReceiptPdf(filePath);
+        pdfPrintService.printPdf(filePath);
 
 //      printReceipt(savedReceipt);
 
@@ -80,6 +100,7 @@ public class ReceiptService {
 
     public Receipt saveReceiptAsVoucher(InputData inputData) throws Exception {
         Receipt newReceipt = new Receipt();
+        newReceipt.generateUUIDForVoucher();
         newReceipt.totalPlastic = inputData.plastic;
         newReceipt.totalGlass = inputData.glass;
         newReceipt.totalMetal = inputData.metal;
@@ -89,10 +110,11 @@ public class ReceiptService {
 
         String filePath = pdfService.generateReceiptVoucherPdf(savedReceipt);
 
-        pdfPrintService.printReceiptPdf(filePath);
+        pdfPrintService.printPdf(filePath);
 
         return savedReceipt;
     }
+
 
     private void printReceipt(Receipt receipt) throws PrinterException {
         PrinterJob printerJob = PrinterJob.getPrinterJob();

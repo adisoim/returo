@@ -51,15 +51,48 @@ public class TotalReceiptService {
         TotalReceipt totalReceipt = new TotalReceipt(LocalDateTime.now());
 
         for (Receipt receipt : receipts) {
-            totalReceipt.totalMetal += receipt.totalMetal;
-            totalReceipt.totalPlastic += receipt.totalPlastic;
-            totalReceipt.totalGlass += receipt.totalGlass;
-            totalReceipt.totalPrice += receipt.totalPrice;
+            if (receipt.uuid == null) {
+                totalReceipt.totalMetal += receipt.totalMetal;
+                totalReceipt.totalPlastic += receipt.totalPlastic;
+                totalReceipt.totalGlass += receipt.totalGlass;
+                totalReceipt.totalPrice += receipt.totalPrice;
+            }
         }
 
         TotalReceipt savedTotalReceipt = totalReceiptRepo.save(totalReceipt);
 
         String filePath = pdfService.generateDailyTotalPdf(savedTotalReceipt);
+
+        pdfPrintService.printPdf(filePath);
+
+        return savedTotalReceipt;
+    }
+
+    public TotalReceipt saveTotalVoucher(LocalDate localDate) throws IOException, PrinterException {
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+
+        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
+
+        TotalReceipt totalReceipt = new TotalReceipt(LocalDateTime.now());
+
+        for (Receipt receipt : receipts) {
+            if (receipt.uuid != null) {
+                totalReceipt.totalMetal += receipt.totalMetal;
+                totalReceipt.totalPlastic += receipt.totalPlastic;
+                totalReceipt.totalGlass += receipt.totalGlass;
+                totalReceipt.totalPrice += receipt.totalPrice;
+                if (receipt.isUsed()) {
+                    totalReceipt.totalReturnedVouchers++;
+                    totalReceipt.totalPriceOfReturnedVouchers += receipt.totalPrice;
+                }
+                totalReceipt.totalVoucher++;
+            }
+        }
+
+        TotalReceipt savedTotalReceipt = totalReceiptRepo.save(totalReceipt);
+
+        String filePath = pdfService.generateDailyTotalVoucherPdf(savedTotalReceipt);
 
         pdfPrintService.printPdf(filePath);
 

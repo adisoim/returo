@@ -33,6 +33,8 @@ public class RegisterRecycledProducts {
         } catch (PrinterException e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -40,13 +42,6 @@ public class RegisterRecycledProducts {
     @ResponseBody
     public ResponseEntity<Receipt> getTotalReceiptByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Receipt receipt = receiptService.getTotalReceiptByDate(date);
-        return new ResponseEntity<>(receipt, HttpStatus.OK);
-    }
-
-    @GetMapping("/getReceiptsByDate")
-    @ResponseBody
-    public ResponseEntity<List<Receipt>> getReceiptsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<Receipt> receipt = receiptService.getReceiptsByDate(date);
         return new ResponseEntity<>(receipt, HttpStatus.OK);
     }
 
@@ -63,5 +58,16 @@ public class RegisterRecycledProducts {
         }
     }
 
+    @PostMapping("/generateAndPrintDailyVoucherTotalPdf")
+    @ResponseBody
+    public ResponseEntity<TotalReceipt> generateAndPrintDailyVoucherTotalPdf(@RequestBody PrintRequest printRequest) {
+        try {
+            TotalReceipt newTotalReceipt = totalReceiptService.saveTotalVoucher(printRequest.getDate());
 
+            return new ResponseEntity<>(newTotalReceipt, HttpStatus.OK);
+        } catch (IOException | PrinterException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

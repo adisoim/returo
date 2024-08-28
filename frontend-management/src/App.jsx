@@ -65,6 +65,31 @@ export default function App() {
       });
   }
 
+  function handlePdfCreationAndPrintVoucher() {
+    let data = JSON.stringify({
+      date: dateInput,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8050/api/generateAndPrintDailyVoucherTotalPdf",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   function formatDate(date) {
     if (!(date instanceof Date) || isNaN(date.getTime())) return "";
     const day = date.getDate().toString();
@@ -76,7 +101,10 @@ export default function App() {
   return (
     <div className="containter">
       <button className="button" onClick={handlePdfCreationAndPrint}>
-        Creeaza si printeaza PDF
+        Creeaza si printeaza totalul pentru plata numerar
+      </button>
+      <button className="button" onClick={handlePdfCreationAndPrintVoucher}>
+        Creeaza si printeaza totalul pentru vouchere
       </button>
       <button className="button" onClick={handleTotalCreation}>
         Vizualizeaza total

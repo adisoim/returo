@@ -1,20 +1,21 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
-import fs from "fs";
 
-function App() {
+export default function App() {
   const [plastic, setPlastic] = useState(0);
   const [metal, setMetal] = useState(0);
   const [glass, setGlass] = useState(0);
+  const [uuid, setUuid] = useState("");
+  const [message, setMessage] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
 
   const plasticRef = useRef(null);
   const metalRef = useRef(null);
   const glassRef = useRef(null);
+  const barcodeRef = useRef(null);
 
   function handlePrint() {
-    // Create a document
-
     let data = JSON.stringify({
       glass: glass,
       metal: metal,
@@ -33,20 +34,74 @@ function App() {
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        let Receipt = response.data;
-        let params = {
-          id: Receipt.id,
-          total: 0.5 * (Number(glass) + Number(plastic) + Number(metal)),
-          data: new Date(Date.parse(Receipt.localDateTime)),
-          metal: Receipt.totalMetal,
-          plastic: Receipt.totalPlastic,
-          glass: Receipt.totalGlass,
-        };
-        console.log(new Date(Date.parse(params.data)));
-        window.electronAPI.savePDF(params);
       })
       .catch((error) => {
         console.log(error);
+      });
+    handleReset();
+  }
+
+  function handleVoucher() {
+    let data = JSON.stringify({
+      plastic: plastic,
+      metal: metal,
+      glass: glass,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8050/barcodes/qr",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    handleReset();
+  }
+
+  function handleScan() {
+    let data = JSON.stringify({
+      uuid: uuid,
+    });
+
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://localhost:8050/barcodes/redeem?uuid=${uuid}`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: data,
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        setMessage(response.data);
+        setIsVisible(true);
+        setTimeout(() => {
+          setIsVisible(false);
+        }, 10000);
+        // console.log(message);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setMessage(error.response.data);
+        setIsVisible(true);
+        setTimeout(() => {
+          setIsVisible(false);
+        }, 10000);
+        // console.log(message);
       });
     handleReset();
   }
@@ -55,6 +110,7 @@ function App() {
     setPlastic(0);
     setGlass(0);
     setMetal(0);
+    barcodeRef.current.focus(); // Focus back to barcode input
   }
 
   function handleKeyDown(e, nextRef) {
@@ -64,12 +120,63 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    // Set focus on barcode input when the component mounts
+    barcodeRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    // Add event listener for clicks outside input fields and buttons
+    const handleClickOutside = (event) => {
+      if (
+        barcodeRef.current &&
+        !barcodeRef.current.contains(event.target) &&
+        !metalRef.current.contains(event.target) &&
+        !plasticRef.current.contains(event.target) &&
+        !glassRef.current.contains(event.target) &&
+        !event.target.closest("button")
+      ) {
+        barcodeRef.current.focus();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Handle scan input changes
+    if (uuid) {
+      handleScan(uuid);
+    }
+  }, [uuid]);
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Gestiune Returo
         </h2>
+      </div>
+
+      <div>
+        <input
+          id="barcode"
+          name="barcode"
+          type="text"
+          ref={barcodeRef}
+          value={uuid}
+          onChange={(e) => setUuid(e.target.value)}
+          onFocus={() => setUuid("")}
+          onBlur={(e) => {
+            if (!e.relatedTarget) {
+              e.target.focus();
+            }
+          }}
+        />
+        {isVisible && <h1 className="alert-message">{message}</h1>}
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -152,35 +259,46 @@ function App() {
             </div>
           </div>
 
-          <h3 style={{ color: "red", textAlign: "center", fontSize: "24px" }}>
-            <strong>
-              Total: {0.5 * (Number(plastic) + Number(glass) + Number(metal))}
-            </strong>
-          </h3>
-
           {metal > 0 || glass > 0 || plastic > 0 ? (
-            <div>
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            <>
+              <h3
+                style={{ color: "red", textAlign: "center", fontSize: "24px" }}
               >
-                Printeaza
-              </button>
-            </div>
-          ) : (
-            ""
-          )}
-          {plastic > 0 || metal > 0 || glass > 0 ? (
-            <div>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Reseteaza
-              </button>
-            </div>
+                <strong>
+                  Total:{" "}
+                  {0.5 * (Number(plastic) + Number(glass) + Number(metal))}
+                </strong>
+              </h3>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={handleVoucher}
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Voucher
+                </button>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Plata numerar
+                </button>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                  Reseteaza
+                </button>
+              </div>
+            </>
           ) : (
             ""
           )}
@@ -189,5 +307,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
