@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TotalVoucherService {
@@ -26,6 +27,15 @@ public class TotalVoucherService {
     private final TotalVoucherRepo totalVoucherRepo;
     private final PdfService pdfService;
     private final PdfPrintService pdfPrintService;
+
+    public List<TotalVoucher> getAllVouchers() {
+        return totalVoucherRepo.findAll();
+    }
+
+    public TotalVoucher getTotalVoucherById(Integer id) {
+        Optional<TotalVoucher> optionalTotalVoucher = totalVoucherRepo.findById(id);
+        return optionalTotalVoucher.orElse(null);
+    }
 
     public TotalVoucher saveTotalVoucher(LocalDate localDate) throws IOException, PrinterException {
         LocalDateTime startOfDay = localDate.atStartOfDay();
@@ -56,5 +66,14 @@ public class TotalVoucherService {
         pdfPrintService.printPdf(filePath);
 
         return savedTotalVoucher;
+    }
+
+    public TotalVoucher updateTotalVoucher(TotalVoucher totalVoucher) {
+        Optional<TotalVoucher> existingTotalVoucher = totalVoucherRepo.findById(totalVoucher.getId());
+        return existingTotalVoucher.map(totalVoucherRepo::save).orElse(null);
+    }
+
+    public void deleteTotalVoucherById(Integer id) {
+        totalVoucherRepo.deleteById(id);
     }
 }

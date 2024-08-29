@@ -68,12 +68,12 @@ public class TotalReceiptService {
         return savedTotalReceipt;
     }
 
-    public TotalReceipt updateReceipt(TotalReceipt totalReceipt) {
+    public TotalReceipt updateTotalReceipt(TotalReceipt totalReceipt) {
         Optional<TotalReceipt> existingReceipt = totalReceiptRepo.findById(totalReceipt.id);
-        return totalReceiptRepo.save(totalReceipt);
+        return existingReceipt.map(totalReceiptRepo::save).orElse(null);
     }
 
-    public void deleteReceiptById(Integer id) {
+    public void deleteTotalReceiptById(Integer id) {
         totalReceiptRepo.deleteById(id);
     }
 }
