@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ro.buza.returo.dao.ReceiptRepo;
 import ro.buza.returo.entities.Receipt;
 import ro.buza.returo.entities.TotalReceipt;
+import ro.buza.returo.entities.TotalVoucher;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +39,7 @@ public class PdfService {
     public String generateDailyTotalPdf(TotalReceipt totalReceipt) throws IOException {
         Rectangle pageSize = new Rectangle(58 * 2.43465f, 190f); // 58mm x 297mm
         Document document = new Document(pageSize, 5f, 5f, 5f, 5f); // Adjusted margins
-        String filePath = totalPath + "\\total_zilnic_" + totalReceipt.getId() + ".pdf";
+        String filePath = totalPath + "\\total_zilnic_plata_numerar" + totalReceipt.getId() + ".pdf";
 
         try {
             PdfWriter.getInstance(document, new FileOutputStream(filePath));
@@ -71,10 +72,10 @@ public class PdfService {
         return filePath;
     }
 
-    public String generateDailyTotalVoucherPdf(TotalReceipt totalReceipt) throws IOException {
+    public String generateDailyTotalVoucherPdf(TotalVoucher totalVoucher) throws IOException {
         Rectangle pageSize = new Rectangle(58 * 2.43465f, 220f); // 58mm x 297mm
         Document document = new Document(pageSize, 5f, 5f, 5f, 5f); // Adjusted margins
-        String filePath = totalPath + "\\total_zilnic_" + totalReceipt.getId() + ".pdf";
+        String filePath = totalPath + "\\total_zilnic_vouchere_" + totalVoucher.getId() + ".pdf";
 
         try {
             PdfWriter.getInstance(document, new FileOutputStream(filePath));
@@ -92,17 +93,17 @@ public class PdfService {
             addCenteredParagraph(document, "RO214748", bodyFont);
             addCenteredParagraph(document, "VOUCHER", headerFont);
             addCenteredParagraph(document, "TOTAL VOUCHERE EMISE", boldBodyFont);
-            addCenteredParagraph(document, totalReceipt.totalPrice + " LEI", boldBodyFont);
+            addCenteredParagraph(document, totalVoucher.totalPrice + " LEI", boldBodyFont);
             addCenteredParagraph(document, "TOTAL VOUCHERE RETURNATE", boldBodyFont);
-            addCenteredParagraph(document, totalReceipt.totalPriceOfReturnedVouchers + " LEI", boldBodyFont);
+            addCenteredParagraph(document, totalVoucher.totalPriceOfReturnedVouchers + " LEI", boldBodyFont);
 
-            addLeftAlignedParagraph(document, totalReceipt.totalMetal + " x SGR Metal", bodyFont);
-            addLeftAlignedParagraph(document, totalReceipt.totalPlastic + " x SGR Plastic", bodyFont);
-            addLeftAlignedParagraph(document, totalReceipt.totalGlass + " x SGR Sticla", bodyFont);
-            addLeftAlignedParagraph(document, totalReceipt.totalReturnedVouchers + " x Vouchere returnate", bodyFont);
-            addLeftAlignedParagraph(document, totalReceipt.totalVoucher + " x Vouchere emise", bodyFont);
-            addLeftAlignedParagraph(document, "DATA: " + totalReceipt.getLocalDateTime().format(formatter), bodyFont);
-            addLeftAlignedParagraph(document, "BNF NR: " + totalReceipt.getId(), bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalMetal + " x SGR Metal", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalPlastic + " x SGR Plastic", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalGlass + " x SGR Sticla", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalReturnedVouchers + " x Vouchere returnate", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalVouchers + " x Vouchere emise", bodyFont);
+            addLeftAlignedParagraph(document, "DATA: " + totalVoucher.getLocalDateTime().format(formatter), bodyFont);
+            addLeftAlignedParagraph(document, "BNF NR: " + totalVoucher.getId(), bodyFont);
 
             document.close();
         } catch (DocumentException e) {

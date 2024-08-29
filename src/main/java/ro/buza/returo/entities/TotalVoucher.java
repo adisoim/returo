@@ -6,11 +6,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@Setter
 @Entity
-@Table(name = "total")
-public class TotalReceipt {
+@Table(name = "total_voucher")
+public class TotalVoucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
@@ -20,16 +20,21 @@ public class TotalReceipt {
     public int totalMetal;
     @Column(name = "total_glass")
     public int totalGlass;
-    @Column(name = "total_price")
-    public double totalPrice;
     @Column(name = "date_time")
     public LocalDateTime localDateTime;
+    @Column(name = "total_returned_vouchers")
+    public int totalReturnedVouchers;
+    @Column(name = "total_price_of_returned_vouchers")
+    public double totalPriceOfReturnedVouchers;
+    @Column(name = "total_vouchers")
+    public int totalVouchers;
+    @Column(name = "total_price")
+    public double totalPrice;
 
-    public TotalReceipt() {
+    public TotalVoucher() {
     }
 
-    public TotalReceipt(LocalDateTime localDateTime) {
+    public TotalVoucher(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;
     }
-
 }

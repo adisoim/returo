@@ -8,12 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.buza.returo.entities.Receipt;
 import ro.buza.returo.entities.TotalReceipt;
+import ro.buza.returo.entities.TotalVoucher;
 import ro.buza.returo.services.*;
 
 import java.awt.print.PrinterException;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -23,6 +23,8 @@ public class RegisterRecycledProducts {
     ReceiptService receiptService;
     @Autowired
     TotalReceiptService totalReceiptService;
+    @Autowired
+    TotalVoucherService totalVoucherService;
 
     @PostMapping("/register")
     @ResponseBody
@@ -60,11 +62,11 @@ public class RegisterRecycledProducts {
 
     @PostMapping("/generateAndPrintDailyVoucherTotalPdf")
     @ResponseBody
-    public ResponseEntity<TotalReceipt> generateAndPrintDailyVoucherTotalPdf(@RequestBody PrintRequest printRequest) {
+    public ResponseEntity<TotalVoucher> generateAndPrintDailyVoucherTotalPdf(@RequestBody PrintRequest printRequest) {
         try {
-            TotalReceipt newTotalReceipt = totalReceiptService.saveTotalVoucher(printRequest.getDate());
+            TotalVoucher newTotalVoucher = totalVoucherService.saveTotalVoucher(printRequest.getDate());
 
-            return new ResponseEntity<>(newTotalReceipt, HttpStatus.OK);
+            return new ResponseEntity<>(newTotalVoucher, HttpStatus.OK);
         } catch (IOException | PrinterException e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
