@@ -1,6 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+import Input from "./Input.jsx";
+import Button from "./Button.jsx";
 
 export default function App() {
   const [plastic, setPlastic] = useState(0);
@@ -160,7 +162,6 @@ export default function App() {
           Gestiune Returo
         </h2>
       </div>
-
       <div>
         <input
           id="barcode"
@@ -181,83 +182,35 @@ export default function App() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6">
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="metal"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Metal
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                id="metal"
-                name="metal"
-                value={metal}
-                ref={metalRef}
-                type="number"
-                onChange={(e) => setMetal(Number(e.target.value))}
-                onFocus={() => setMetal("")}
-                onKeyDown={(e) => handleKeyDown(e, plasticRef)}
-                required
-                min={0}
-                className="pl-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
+          <Input
+            label="Metal"
+            name="Metal"
+            value={metal}
+            inputRef={metalRef}
+            onChange={(e) => setMetal(Number(e.target.value))}
+            onFocus={() => setMetal("")}
+            onKeyDown={(e) => handleKeyDown(e, plasticRef)}
+          />
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="plastic"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Plastic
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                id="plastic"
-                name="plastic"
-                value={plastic}
-                ref={plasticRef}
-                type="number"
-                onChange={(e) => setPlastic(Number(e.target.value))}
-                onFocus={() => setPlastic("")}
-                onKeyDown={(e) => handleKeyDown(e, glassRef)}
-                required
-                min={0}
-                className="pl-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
+          <Input
+            label="Plastic"
+            name="Plastic"
+            value={plastic}
+            inputRef={plasticRef}
+            onChange={(e) => setPlastic(Number(e.target.value))}
+            onFocus={() => setPlastic("")}
+            onKeyDown={(e) => handleKeyDown(e, glassRef)}
+          />
 
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="glass"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Sticla
-              </label>
-            </div>
-            <div className="mt-2">
-              <input
-                id="glass"
-                name="glass"
-                type="number"
-                value={glass}
-                ref={glassRef}
-                onChange={(e) => setGlass(Number(e.target.value))}
-                onFocus={() => setGlass("")}
-                onKeyDown={(e) => handleKeyDown(e, metalRef)}
-                required
-                min={0}
-                className="pl-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
+          <Input
+            label="Glass"
+            name="Sticla"
+            value={glass}
+            inputRef={glassRef}
+            onChange={(e) => setGlass(Number(e.target.value))}
+            onFocus={() => setGlass("")}
+            onKeyDown={(e) => handleKeyDown(e, metalRef)}
+          />
 
           {metal > 0 || glass > 0 || plastic > 0 ? (
             <>
@@ -270,34 +223,9 @@ export default function App() {
                 </strong>
               </h3>
 
-              <div>
-                <button
-                  type="button"
-                  onClick={handleVoucher}
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Voucher
-                </button>
-              </div>
-              <div>
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Plata numerar
-                </button>
-              </div>
-
-              <div>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Reseteaza
-                </button>
-              </div>
+              <Button onClick={handleVoucher}>Voucher</Button>
+              <Button onClick={handlePrint}>Plata numerar</Button>
+              <Button onClick={handleReset}>Reseteaza</Button>
             </>
           ) : (
             ""
