@@ -35,6 +35,7 @@ public class PdfService {
     }
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    private static final DateTimeFormatter formatterForPartialTotal = DateTimeFormatter.ofPattern("dd-MM-yyyy/HH:mm:ss");
 
     public String generateDailyTotalPdf(TotalReceipt totalReceipt) throws IOException {
         Rectangle pageSize = new Rectangle(58 * 2.43465f, 190f); // 58mm x 297mm
@@ -64,6 +65,41 @@ public class PdfService {
             addLeftAlignedParagraph(document, totalReceipt.totalGlass + " x SGR Sticla", bodyFont);
             addLeftAlignedParagraph(document, "DATA: " + totalReceipt.getLocalDateTime().format(formatter), bodyFont);
             addLeftAlignedParagraph(document, "BNF NR: " + totalReceipt.getId(), bodyFont);
+
+            document.close();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return filePath;
+    }
+
+    public String generateDailyPartialTotalPdf(TotalReceipt totalReceipt) throws IOException {
+        Rectangle pageSize = new Rectangle(58 * 2.43465f, 190f); // 58mm x 297mm
+        Document document = new Document(pageSize, 5f, 5f, 5f, 5f); // Adjusted margins
+        String filePath = totalPath + "\\total_partial_plata_numerar" + totalReceipt.getId() + ".pdf";
+
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+
+            Font titleFont = FontFactory.getFont(HELVETICA_BOLD, 10, BaseColor.BLACK);
+            Font headerFont = FontFactory.getFont(HELVETICA_BOLD, 8, BaseColor.BLACK);
+            Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 8, BaseColor.BLACK);
+            Font boldBodyFont = FontFactory.getFont(HELVETICA_BOLD, 8, BaseColor.BLACK);
+
+            addCenteredParagraph(document, "FALKE A&TS SRL", titleFont);
+            addCenteredParagraph(document, "JUD. CLUJ LOC. BUZA", headerFont);
+            addCenteredParagraph(document, "NR.62", bodyFont);
+            addCenteredParagraph(document, "COD IDENTIFICARE FISCALA", bodyFont);
+            addCenteredParagraph(document, "RO214748", bodyFont);
+            addCenteredParagraph(document, "EXTRAGERE DIN CASA", headerFont);
+            addCenteredParagraph(document, "NUMERAR: TOTAL PARTIAL", boldBodyFont);
+            addCenteredParagraph(document, "-" + totalReceipt.totalPrice + " LEI", boldBodyFont);
+
+            addLeftAlignedParagraph(document, totalReceipt.totalMetal + " x SGR Metal", bodyFont);
+            addLeftAlignedParagraph(document, totalReceipt.totalPlastic + " x SGR Plastic", bodyFont);
+            addLeftAlignedParagraph(document, totalReceipt.totalGlass + " x SGR Sticla", bodyFont);
+            addLeftAlignedParagraph(document, "DATA: " + totalReceipt.getLocalDateTime().format(formatter), bodyFont);
 
             document.close();
         } catch (DocumentException e) {
@@ -104,6 +140,45 @@ public class PdfService {
             addLeftAlignedParagraph(document, totalVoucher.totalVouchers + " x Vouchere emise", bodyFont);
             addLeftAlignedParagraph(document, "DATA: " + totalVoucher.getLocalDateTime().format(formatter), bodyFont);
             addLeftAlignedParagraph(document, "BNF NR: " + totalVoucher.getId(), bodyFont);
+
+            document.close();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return filePath;
+    }
+
+    public String generateDailyPartialTotalVoucherPdf(TotalVoucher totalVoucher) throws IOException {
+        Rectangle pageSize = new Rectangle(58 * 2.43465f, 230f); // 58mm x 297mm
+        Document document = new Document(pageSize, 5f, 5f, 5f, 5f); // Adjusted margins
+        String filePath = totalPath + "\\total_partial_vouchere" + totalVoucher.getId() + ".pdf";
+
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+
+            Font titleFont = FontFactory.getFont(HELVETICA_BOLD, 10, BaseColor.BLACK);
+            Font headerFont = FontFactory.getFont(HELVETICA_BOLD, 8, BaseColor.BLACK);
+            Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 8, BaseColor.BLACK);
+            Font boldBodyFont = FontFactory.getFont(HELVETICA_BOLD, 8, BaseColor.BLACK);
+
+            addCenteredParagraph(document, "FALKE A&TS SRL", titleFont);
+            addCenteredParagraph(document, "JUD. CLUJ LOC. BUZA", headerFont);
+            addCenteredParagraph(document, "NR.62", bodyFont);
+            addCenteredParagraph(document, "COD IDENTIFICARE FISCALA", bodyFont);
+            addCenteredParagraph(document, "RO214748", bodyFont);
+            addCenteredParagraph(document, "VOUCHER", headerFont);
+            addCenteredParagraph(document, "TOTAL PARTIAL VOUCHERE EMISE", boldBodyFont);
+            addCenteredParagraph(document, totalVoucher.totalPrice + " LEI", boldBodyFont);
+            addCenteredParagraph(document, "TOTAL PARTIAL VOUCHERE RETURNATE", boldBodyFont);
+            addCenteredParagraph(document, totalVoucher.totalPriceOfReturnedVouchers + " LEI", boldBodyFont);
+
+            addLeftAlignedParagraph(document, totalVoucher.totalMetal + " x SGR Metal", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalPlastic + " x SGR Plastic", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalGlass + " x SGR Sticla", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalReturnedVouchers + " x Vouchere returnate", bodyFont);
+            addLeftAlignedParagraph(document, totalVoucher.totalVouchers + " x Vouchere emise", bodyFont);
+            addLeftAlignedParagraph(document, "DATA: " + totalVoucher.getLocalDateTime().format(formatter), bodyFont);
 
             document.close();
         } catch (DocumentException e) {

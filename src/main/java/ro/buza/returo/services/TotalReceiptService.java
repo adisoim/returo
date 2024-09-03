@@ -68,6 +68,29 @@ public class TotalReceiptService {
         return savedTotalReceipt;
     }
 
+    public TotalReceipt generatePartialTotalReceipt(LocalDate localDate) throws IOException, PrinterException {
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+
+        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
+
+        TotalReceipt totalReceipt = new TotalReceipt(LocalDateTime.now());
+
+        for (Receipt receipt : receipts) {
+            if (receipt.uuid == null) {
+                totalReceipt.totalMetal += receipt.totalMetal;
+                totalReceipt.totalPlastic += receipt.totalPlastic;
+                totalReceipt.totalGlass += receipt.totalGlass;
+                totalReceipt.totalPrice += receipt.totalPrice;
+            }
+        }
+        String filePath = pdfService.generateDailyPartialTotalPdf(totalReceipt);
+
+        pdfPrintService.printPdf(filePath);
+
+        return totalReceipt;
+    }
+
     public TotalReceipt updateTotalReceipt(TotalReceipt totalReceipt) {
         Optional<TotalReceipt> existingReceipt = totalReceiptRepo.findById(totalReceipt.id);
         return existingReceipt.map(totalReceiptRepo::save).orElse(null);
@@ -76,4 +99,5 @@ public class TotalReceiptService {
     public void deleteTotalReceiptById(Integer id) {
         totalReceiptRepo.deleteById(id);
     }
+
 }

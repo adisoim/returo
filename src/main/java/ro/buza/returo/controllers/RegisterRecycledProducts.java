@@ -72,4 +72,31 @@ public class RegisterRecycledProducts {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/partialTotalReceipt")
+    @ResponseBody
+    public ResponseEntity<TotalReceipt> printPartialTotalReceipt() {
+        try {
+            TotalReceipt newTotalReceipt = totalReceiptService.generatePartialTotalReceipt(LocalDate.now());
+
+            return new ResponseEntity<>(newTotalReceipt, HttpStatus.OK);
+        } catch (IOException | PrinterException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/partialTotalVoucher")
+    @ResponseBody
+    public ResponseEntity<TotalVoucher> printPartialTotalVoucher() {
+        try {
+            TotalVoucher newTotalVoucher = totalVoucherService.generatePartialTotalVoucher(LocalDate.now());
+
+            return new ResponseEntity<>(newTotalVoucher, HttpStatus.OK);
+        } catch (IOException | PrinterException e) {
+            e.printStackTrace(
+            );
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

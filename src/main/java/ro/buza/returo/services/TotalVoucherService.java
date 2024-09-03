@@ -68,6 +68,34 @@ public class TotalVoucherService {
         return savedTotalVoucher;
     }
 
+    public TotalVoucher generatePartialTotalVoucher(LocalDate localDate) throws IOException, PrinterException {
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+
+        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
+
+        TotalVoucher totalVoucher = new TotalVoucher(LocalDateTime.now());
+
+        for (Receipt receipt : receipts) {
+            if (receipt.uuid != null) {
+                totalVoucher.totalMetal += receipt.totalMetal;
+                totalVoucher.totalPlastic += receipt.totalPlastic;
+                totalVoucher.totalGlass += receipt.totalGlass;
+                totalVoucher.totalPrice += receipt.totalPrice;
+                if (receipt.isUsed()) {
+                    totalVoucher.totalReturnedVouchers++;
+                    totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
+                }
+                totalVoucher.totalVouchers++;
+            }
+        }
+        String filePath = pdfService.generateDailyPartialTotalVoucherPdf(totalVoucher);
+
+        pdfPrintService.printPdf(filePath);
+
+        return totalVoucher;
+    }
+
     public TotalVoucher updateTotalVoucher(TotalVoucher totalVoucher) {
         Optional<TotalVoucher> existingTotalVoucher = totalVoucherRepo.findById(totalVoucher.getId());
         return existingTotalVoucher.map(totalVoucherRepo::save).orElse(null);
@@ -76,4 +104,5 @@ public class TotalVoucherService {
     public void deleteTotalVoucherById(Integer id) {
         totalVoucherRepo.deleteById(id);
     }
+
 }
