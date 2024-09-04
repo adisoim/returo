@@ -18,8 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
-.total
-.bonuri
+total/
+bonuri/
 
 ### NetBeans ###
 /nbproject/private/
