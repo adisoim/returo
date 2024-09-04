@@ -40,13 +40,6 @@ public class RegisterRecycledProducts {
         }
     }
 
-    @GetMapping("/getTotalReceiptByDate")
-    @ResponseBody
-    public ResponseEntity<Receipt> getTotalReceiptByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        Receipt receipt = receiptService.getTotalReceiptByDate(date);
-        return new ResponseEntity<>(receipt, HttpStatus.OK);
-    }
-
     @PostMapping("/generateAndPrintDailyTotalPdf")
     @ResponseBody
     public ResponseEntity<TotalReceipt> generateAndPrintDailyTotalPdf(@RequestBody PrintRequest printRequest) {

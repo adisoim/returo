@@ -51,26 +51,6 @@ public class ReceiptService {
         receiptRepo.save(receipt);
     }
 
-    public Receipt getTotalReceiptByDate(LocalDate localDate) {
-        LocalDateTime startOfDay = localDate.atStartOfDay();
-        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
-        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
-        Receipt megaReceipt = new Receipt(LocalDateTime.now());
-        for (Receipt receipt : receipts) {
-            megaReceipt.totalMetal += receipt.totalMetal;
-            megaReceipt.totalPlastic += receipt.totalPlastic;
-            megaReceipt.totalGlass += receipt.totalGlass;
-            megaReceipt.totalPrice += receipt.totalPrice;
-        }
-        return megaReceipt;
-    }
-
-    public List<Receipt> getReceiptsByDate(LocalDate localDate) {
-        LocalDateTime startOfDay = localDate.atStartOfDay();
-        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
-        return receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
-    }
-
     public Receipt getReceiptById(Integer id) {
         Optional<Receipt> optionalReceipt = receiptRepo.findById(id);
         if (optionalReceipt.isPresent()) {
@@ -114,7 +94,6 @@ public class ReceiptService {
 
         return savedReceipt;
     }
-
 
     private void printReceipt(Receipt receipt) throws PrinterException {
         PrinterJob printerJob = PrinterJob.getPrinterJob();

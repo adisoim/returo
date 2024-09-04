@@ -21,7 +21,7 @@ export default function App() {
   const glassRef = useRef(null);
   const barcodeRef = useRef(null);
 
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   function handlePrint() {
     let data = JSON.stringify({

@@ -35,7 +35,6 @@ public class PdfService {
     }
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-    private static final DateTimeFormatter formatterForPartialTotal = DateTimeFormatter.ofPattern("dd-MM-yyyy/HH:mm:ss");
 
     public String generateDailyTotalPdf(TotalReceipt totalReceipt) throws IOException {
         Rectangle pageSize = new Rectangle(58 * 2.43465f, 190f); // 58mm x 297mm

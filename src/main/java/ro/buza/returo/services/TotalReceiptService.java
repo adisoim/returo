@@ -21,7 +21,6 @@ public class TotalReceiptService {
     private final ReceiptRepo receiptRepo;
     private final PdfService pdfService;
     private final PdfPrintService pdfPrintService;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     public TotalReceiptService(TotalReceiptRepo totalReceiptRepo, ReceiptRepo receiptRepo, PdfService pdfService, PdfPrintService pdfPrintService) {
         this.totalReceiptRepo = totalReceiptRepo;
