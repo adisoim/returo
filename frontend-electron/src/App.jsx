@@ -5,6 +5,8 @@ import Input from "./Input.jsx";
 import Button from "./Button.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import Management from "./Management.jsx";
 
 export default function App() {
   const [plastic, setPlastic] = useState(0);
@@ -13,12 +15,13 @@ export default function App() {
   const [uuid, setUuid] = useState("");
   const [message, setMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
-  const [isManagementOpen, setIsManagementOpen] = useState(false);
 
   const plasticRef = useRef(null);
   const metalRef = useRef(null);
   const glassRef = useRef(null);
   const barcodeRef = useRef(null);
+
+  const navigate = useNavigate(); // Hook for navigation
 
   function handlePrint() {
     let data = JSON.stringify({
@@ -158,100 +161,109 @@ export default function App() {
     }
   }, [uuid]);
 
-  function showManagement() {}
+  function toggleRoute() {
+    if (window.location.pathname === "/") {
+      navigate("/management");
+    } else {
+      navigate("/");
+    }
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
-      <button onClick={showManagement}>
+      <button onClick={toggleRoute}>
         <FontAwesomeIcon className="font-awesome-icon" icon={faBars} />
       </button>
-      {!isManagementOpen && (
-        <>
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Gestiune Returo
-            </h2>
-          </div>
-          <div>
-            <input
-              id="barcode"
-              name="barcode"
-              type="text"
-              ref={barcodeRef}
-              value={uuid}
-              onChange={(e) => setUuid(e.target.value)}
-              onFocus={() => setUuid("")}
-              onBlur={(e) => {
-                if (!e.relatedTarget) {
-                  e.target.focus();
-                }
-              }}
-            />
-            {isVisible && <h1 className="alert-message">{message}</h1>}
-          </div>
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form className="space-y-6">
-              <Input
-                label="Metal"
-                name="Metal"
-                value={metal}
-                inputRef={metalRef}
-                onChange={(e) => setMetal(Number(e.target.value))}
-                onFocus={() => setMetal("")}
-                onKeyDown={(e) => handleKeyDown(e, plasticRef)}
-              />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                <h2 className="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                  Gestiune Returo
+                </h2>
+              </div>
+              <div>
+                <input
+                  id="barcode"
+                  name="barcode"
+                  type="text"
+                  ref={barcodeRef}
+                  value={uuid}
+                  onChange={(e) => setUuid(e.target.value)}
+                  onFocus={() => setUuid("")}
+                  onBlur={(e) => {
+                    if (!e.relatedTarget) {
+                      e.target.focus();
+                    }
+                  }}
+                />
+                {isVisible && <h1 className="alert-message">{message}</h1>}
+              </div>
+              <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <form className="space-y-6">
+                  <Input
+                    label="Metal"
+                    name="Metal"
+                    value={metal}
+                    inputRef={metalRef}
+                    onChange={(e) => setMetal(Number(e.target.value))}
+                    onFocus={() => setMetal("")}
+                    onKeyDown={(e) => handleKeyDown(e, plasticRef)}
+                  />
 
-              <Input
-                label="Plastic"
-                name="Plastic"
-                value={plastic}
-                inputRef={plasticRef}
-                onChange={(e) => setPlastic(Number(e.target.value))}
-                onFocus={() => setPlastic("")}
-                onKeyDown={(e) => handleKeyDown(e, glassRef)}
-              />
+                  <Input
+                    label="Plastic"
+                    name="Plastic"
+                    value={plastic}
+                    inputRef={plasticRef}
+                    onChange={(e) => setPlastic(Number(e.target.value))}
+                    onFocus={() => setPlastic("")}
+                    onKeyDown={(e) => handleKeyDown(e, glassRef)}
+                  />
 
-              <Input
-                label="Glass"
-                name="Sticla"
-                value={glass}
-                inputRef={glassRef}
-                onChange={(e) => setGlass(Number(e.target.value))}
-                onFocus={() => setGlass("")}
-                onKeyDown={(e) => handleKeyDown(e, metalRef)}
-              />
+                  <Input
+                    label="Glass"
+                    name="Sticla"
+                    value={glass}
+                    inputRef={glassRef}
+                    onChange={(e) => setGlass(Number(e.target.value))}
+                    onFocus={() => setGlass("")}
+                    onKeyDown={(e) => handleKeyDown(e, metalRef)}
+                  />
 
-              {metal > 0 || glass > 0 || plastic > 0 ? (
-                <>
-                  <h3
-                    style={{
-                      color: "red",
-                      textAlign: "center",
-                      fontSize: "24px",
-                    }}
-                  >
-                    <strong>
-                      Total:{" "}
-                      {0.5 * (Number(plastic) + Number(glass) + Number(metal))}
-                    </strong>
-                  </h3>
+                  {metal > 0 || glass > 0 || plastic > 0 ? (
+                    <>
+                      <h3
+                        style={{
+                          color: "red",
+                          textAlign: "center",
+                          fontSize: "24px",
+                        }}
+                      >
+                        <strong>
+                          Total:{" "}
+                          {0.5 *
+                            (Number(plastic) + Number(glass) + Number(metal))}
+                        </strong>
+                      </h3>
 
-                  <Button onClick={handleVoucher}>Voucher</Button>
-                  <Button onClick={handlePrint}>Plata numerar</Button>
-                  <Button onClick={handleReset}>Reseteaza</Button>
-                </>
-              ) : (
-                ""
-              )}
-            </form>
-          </div>
-        </>
-      )}
-      {isManagementOpen && (
-        <>
-          <Button>Total plati numerar</Button>
-        </>
-      )}
+                      <Button onClick={handleVoucher}>Voucher</Button>
+                      <Button onClick={handlePrint}>Plata numerar</Button>
+                      <Button onClick={handleReset}>Reseteaza</Button>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </form>
+              </div>
+            </>
+          }
+        />
+
+        <Route path="/management" element={<Management />} />
+      </Routes>
     </div>
   );
 }
