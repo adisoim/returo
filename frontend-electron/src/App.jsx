@@ -261,7 +261,6 @@ export default function App() {
             </>
           }
         />
-
         <Route path="/management" element={<Management />} />
       </Routes>
     </div>

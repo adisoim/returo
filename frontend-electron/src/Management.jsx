@@ -6,7 +6,7 @@ import axios from "axios";
 export default function Management() {
   const [dateInput, setDateInput] = useState("");
 
-  function handlePdfCreationAndPrint() {
+  function printDailyForReceipts() {
     let data = JSON.stringify({
       date: dateInput,
     });
@@ -31,7 +31,7 @@ export default function Management() {
       });
   }
 
-  function handlePdfCreationAndPrintVoucher() {
+  function printDailyForVouchers() {
     let data = JSON.stringify({
       date: dateInput,
     });
@@ -56,7 +56,7 @@ export default function Management() {
       });
   }
 
-  function printPartialTotalCash() {
+  function printPartialForReceipts() {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
@@ -74,7 +74,7 @@ export default function Management() {
       });
   }
 
-  function printPartialTotalVoucher() {
+  function printPartialForVouchers() {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
@@ -96,16 +96,14 @@ export default function Management() {
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6">
-          <Button onClick={handlePdfCreationAndPrint}>
-            Creeaza si printeaza totalul pentru plata numerar
+          <Button onClick={printDailyForReceipts}>
+            Total zilnic plata numerar
           </Button>
-          <Button onClick={handlePdfCreationAndPrintVoucher}>
-            Creeaza si printeaza totalul pentru vouchere
-          </Button>
-          <Button onClick={printPartialTotalCash}>
+          <Button onClick={printDailyForVouchers}>Total zilnic vouchere</Button>
+          <Button onClick={printPartialForReceipts}>
             Total partial plata numerar
           </Button>
-          <Button onClick={printPartialTotalVoucher}>
+          <Button onClick={printPartialForVouchers}>
             Total partial vouchere
           </Button>
 
