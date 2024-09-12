@@ -38,27 +38,7 @@ public class TotalVoucherService {
     }
 
     public TotalVoucher saveTotalVoucher(LocalDate localDate) throws IOException, PrinterException {
-        LocalDateTime startOfDay = localDate.atStartOfDay();
-        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
-
-        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
-
-        TotalVoucher totalVoucher = new TotalVoucher(LocalDateTime.now());
-
-        for (Receipt receipt : receipts) {
-            if (receipt.uuid != null) {
-                totalVoucher.totalMetal += receipt.totalMetal;
-                totalVoucher.totalPlastic += receipt.totalPlastic;
-                totalVoucher.totalGlass += receipt.totalGlass;
-                totalVoucher.totalPrice += receipt.totalPrice;
-                if (receipt.isUsed()) {
-                    totalVoucher.totalReturnedVouchers++;
-                    totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
-                }
-                totalVoucher.totalVouchers++;
-            }
-        }
-
+        TotalVoucher totalVoucher = getTotalVoucher(localDate);
         TotalVoucher savedTotalVoucher = totalVoucherRepo.save(totalVoucher);
 
         String filePath = pdfService.generateDailyTotalVoucherPdf(savedTotalVoucher);
@@ -69,6 +49,15 @@ public class TotalVoucherService {
     }
 
     public TotalVoucher generatePartialTotalVoucher(LocalDate localDate) throws IOException, PrinterException {
+        TotalVoucher totalVoucher = getTotalVoucher(localDate);
+        String filePath = pdfService.generateDailyPartialTotalVoucherPdf(totalVoucher);
+
+        pdfPrintService.printPdf(filePath);
+
+        return totalVoucher;
+    }
+
+    private TotalVoucher getTotalVoucher(LocalDate localDate) {
         LocalDateTime startOfDay = localDate.atStartOfDay();
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
@@ -89,10 +78,6 @@ public class TotalVoucherService {
                 totalVoucher.totalVouchers++;
             }
         }
-        String filePath = pdfService.generateDailyPartialTotalVoucherPdf(totalVoucher);
-
-        pdfPrintService.printPdf(filePath);
-
         return totalVoucher;
     }
 
