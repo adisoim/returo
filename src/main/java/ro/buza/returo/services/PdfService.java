@@ -166,7 +166,6 @@ public class PdfService {
             addCenteredParagraph(document, "NR.62", bodyFont);
             addCenteredParagraph(document, "COD IDENTIFICARE FISCALA", bodyFont);
             addCenteredParagraph(document, "RO214748", bodyFont);
-            addCenteredParagraph(document, "VOUCHER", headerFont);
             addCenteredParagraph(document, "TOTAL PARTIAL VOUCHERE EMISE", boldBodyFont);
             addCenteredParagraph(document, totalVoucher.totalPrice + " LEI", boldBodyFont);
             addCenteredParagraph(document, "TOTAL PARTIAL VOUCHERE RETURNATE", boldBodyFont);

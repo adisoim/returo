@@ -130,7 +130,9 @@ export default function App() {
 
   useEffect(() => {
     // Set focus on barcode input when the component mounts
-    barcodeRef.current.focus();
+    if (barcodeRef.current) {
+      barcodeRef.current.focus();
+    }
   }, []);
 
   useEffect(() => {
@@ -171,9 +173,9 @@ export default function App() {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
-      <button onClick={toggleRoute}>
+      {/* <button onClick={toggleRoute}>
         <FontAwesomeIcon className="font-awesome-icon" icon={faBars} />
-      </button>
+      </button> */}
       <Routes>
         <Route
           path="/"
