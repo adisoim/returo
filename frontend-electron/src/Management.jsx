@@ -2,9 +2,6 @@ import React from "react";
 import { useState } from "react";
 import Button from "./Button";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { Route, Routes, useNavigate } from "react-router-dom";
 
 export default function Management() {
   const [dateInput, setDateInput] = useState("");
@@ -95,21 +92,8 @@ export default function Management() {
       });
   }
 
-  const navigate = useNavigate();
-
-  function toggleRoute() {
-    if (window.location.pathname === "/") {
-      navigate("/management");
-    } else {
-      navigate("/");
-    }
-  }
-
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
-      {/* <button onClick={toggleRoute}>
-        <FontAwesomeIcon className="font-awesome-icon" icon={faBars} />
-      </button> */}
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form className="space-y-6">
           <Button onClick={printDailyForReceipts}>

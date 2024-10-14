@@ -61,23 +61,28 @@ public class TotalVoucherService {
         LocalDateTime startOfDay = localDate.atStartOfDay();
         LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
 
-        List<Receipt> receipts = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
+        List<Receipt> receiptsReturned = receiptRepo.findByLocalDateTimeOfReturnBetween(startOfDay, endOfDay);
+        List<Receipt> receiptsGenerated = receiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
 
         TotalVoucher totalVoucher = new TotalVoucher(LocalDateTime.now());
 
-        for (Receipt receipt : receipts) {
+        for (Receipt receipt : receiptsGenerated) {
             if (receipt.uuid != null) {
                 totalVoucher.totalMetal += receipt.totalMetal;
                 totalVoucher.totalPlastic += receipt.totalPlastic;
                 totalVoucher.totalGlass += receipt.totalGlass;
                 totalVoucher.totalPrice += receipt.totalPrice;
-                if (receipt.isUsed()) {
-                    totalVoucher.totalReturnedVouchers++;
-                    totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
-                }
                 totalVoucher.totalVouchers++;
             }
         }
+
+        for (Receipt receipt : receiptsReturned) {
+            if (receipt.getLocalDateTimeOfReturn() != null && receipt.isUsed() && receipt.uuid != null) {
+                totalVoucher.totalReturnedVouchers++;
+                totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
+            }
+        }
+
         return totalVoucher;
     }
 

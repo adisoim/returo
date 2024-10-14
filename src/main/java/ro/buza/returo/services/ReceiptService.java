@@ -8,9 +8,7 @@ import ro.buza.returo.entities.Receipt;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -48,6 +46,7 @@ public class ReceiptService {
         }
 
         receipt.setUsed(true);
+        receipt.setLocalDateTimeOfReturn(LocalDateTime.now());
         receiptRepo.save(receipt);
     }
 

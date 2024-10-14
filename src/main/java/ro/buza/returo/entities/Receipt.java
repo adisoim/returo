@@ -29,6 +29,8 @@ public class Receipt {
     public boolean used = false;
     @Column(name = "uuid", unique = true)
     public String uuid;
+    @Column(name = "date_returned")
+    public LocalDateTime localDateTimeOfReturn;
 
     public Receipt(LocalDateTime localDateTime) {
         this.localDateTime = localDateTime;

@@ -3,8 +3,6 @@ import axios from "axios";
 import "./App.css";
 import Input from "./Input.jsx";
 import Button from "./Button.jsx";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Management from "./Management.jsx";
 
@@ -20,8 +18,6 @@ export default function App() {
   const metalRef = useRef(null);
   const glassRef = useRef(null);
   const barcodeRef = useRef(null);
-
-  const navigate = useNavigate();
 
   function handlePrint() {
     let data = JSON.stringify({
@@ -163,19 +159,8 @@ export default function App() {
     }
   }, [uuid]);
 
-  function toggleRoute() {
-    if (window.location.pathname === "/") {
-      navigate("/management");
-    } else {
-      navigate("/");
-    }
-  }
-
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 lg:px-8">
-      {/* <button onClick={toggleRoute}>
-        <FontAwesomeIcon className="font-awesome-icon" icon={faBars} />
-      </button> */}
       <Routes>
         <Route
           path="/"

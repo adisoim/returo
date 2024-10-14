@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ReceiptRepo extends JpaRepository<Receipt, Integer> {
     List<Receipt> findByLocalDateTimeBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
-
+    List<Receipt> findByLocalDateTimeOfReturnBetween(LocalDateTime startOfDay, LocalDateTime endOfDay);
     Optional<Receipt> findByUuid(String uuid);
 }
