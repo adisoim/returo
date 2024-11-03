@@ -42,7 +42,7 @@ public class BarcodesControllers {
             receiptService.redeemVoucher(uuid);
             return ResponseEntity.ok("Voucher folosit cu succes!");
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
