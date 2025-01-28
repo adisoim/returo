@@ -3,7 +3,7 @@ import axios from "axios";
 import "./App.css";
 import Input from "./Input.jsx";
 import Button from "./Button.jsx";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Management from "./Management.jsx";
 
 export default function App() {
