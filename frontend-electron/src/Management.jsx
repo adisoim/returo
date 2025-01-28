@@ -111,7 +111,7 @@ export default function Management() {
             type="date"
             onChange={(e) => setDateInput(e.target.value)}
             value={dateInput}
-            className="input"
+            className="bg-amber-50 rounded-md"
           ></input>
         </form>
       </div>

@@ -173,6 +173,7 @@ export default function App() {
               </div>
               <div>
                 <input
+                  className="bg-amber-50"
                   id="barcode"
                   name="barcode"
                   type="text"
