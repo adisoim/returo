@@ -1,4 +1,4 @@
-package ro.buza.returo.services;
+package ro.buza.returo.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
-public class PrintRequest {
+public class PrintDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
 }

@@ -1,10 +1,10 @@
 package ro.buza.returo.controllers;
 
-import com.itextpdf.text.DocumentException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.buza.returo.dto.FormDTO;
+import ro.buza.returo.dto.PrintDTO;
 import ro.buza.returo.entities.Receipt;
 import ro.buza.returo.entities.TotalReceipt;
 import ro.buza.returo.entities.TotalVoucher;
@@ -18,16 +18,19 @@ import java.time.LocalDate;
 @RequestMapping("/api")
 @CrossOrigin
 public class RegisterRecycledProducts {
-    @Autowired
-    ReceiptService receiptService;
-    @Autowired
-    TotalReceiptService totalReceiptService;
-    @Autowired
-    TotalVoucherService totalVoucherService;
+    private final ReceiptService receiptService;
+    private final TotalReceiptService totalReceiptService;
+    private final TotalVoucherService totalVoucherService;
+
+    public RegisterRecycledProducts(ReceiptService receiptService, TotalReceiptService totalReceiptService, TotalVoucherService totalVoucherService) {
+        this.receiptService = receiptService;
+        this.totalReceiptService = totalReceiptService;
+        this.totalVoucherService = totalVoucherService;
+    }
 
     @PostMapping("/register")
     @ResponseBody
-    public ResponseEntity<Receipt> register(@RequestBody InputData inputData) throws DocumentException, IOException, PrinterException {
+    public ResponseEntity<Receipt> register(@RequestBody FormDTO inputData) {
         try {
             Receipt newReceipt = receiptService.saveReceipt(inputData);
             return new ResponseEntity<>(newReceipt, HttpStatus.OK);
@@ -41,7 +44,7 @@ public class RegisterRecycledProducts {
 
     @PostMapping("/generateAndPrintDailyTotalPdf")
     @ResponseBody
-    public ResponseEntity<TotalReceipt> generateAndPrintDailyTotalPdf(@RequestBody PrintRequest printRequest) {
+    public ResponseEntity<TotalReceipt> generateAndPrintDailyTotalPdf(@RequestBody PrintDTO printRequest) {
         try {
             TotalReceipt newTotalReceipt = totalReceiptService.saveTotalReceipt(printRequest.getDate());
 
@@ -54,7 +57,7 @@ public class RegisterRecycledProducts {
 
     @PostMapping("/generateAndPrintDailyVoucherTotalPdf")
     @ResponseBody
-    public ResponseEntity<TotalVoucher> generateAndPrintDailyVoucherTotalPdf(@RequestBody PrintRequest printRequest) {
+    public ResponseEntity<TotalVoucher> generateAndPrintDailyVoucherTotalPdf(@RequestBody PrintDTO printRequest) {
         try {
             TotalVoucher newTotalVoucher = totalVoucherService.saveTotalVoucher(printRequest.getDate());
 

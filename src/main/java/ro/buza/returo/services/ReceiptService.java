@@ -3,10 +3,10 @@ package ro.buza.returo.services;
 import com.itextpdf.text.DocumentException;
 import org.springframework.stereotype.Service;
 import ro.buza.returo.dao.ReceiptRepo;
+import ro.buza.returo.dto.FormDTO;
 import ro.buza.returo.entities.Receipt;
 
 import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,11 +59,11 @@ public class ReceiptService {
         return null;
     }
 
-    public Receipt saveReceipt(InputData inputData) throws DocumentException, IOException, PrinterException {
+    public Receipt saveReceipt(FormDTO inputData) throws DocumentException, IOException, PrinterException {
         Receipt newReceipt = new Receipt();
-        newReceipt.totalPlastic = inputData.plastic;
-        newReceipt.totalGlass = inputData.glass;
-        newReceipt.totalMetal = inputData.metal;
+        newReceipt.totalPlastic = inputData.getPlastic();
+        newReceipt.totalGlass = inputData.getGlass();
+        newReceipt.totalMetal = inputData.getMetal();
         newReceipt.totalPrice = 0.5 * (newReceipt.totalGlass + newReceipt.totalMetal + newReceipt.totalPlastic);
         newReceipt.localDateTime = LocalDateTime.now();
         Receipt savedReceipt = receiptRepo.save(newReceipt);
@@ -72,17 +72,15 @@ public class ReceiptService {
 
         pdfPrintService.printPdf(filePath);
 
-//      printReceipt(savedReceipt);
-
         return savedReceipt;
     }
 
-    public Receipt saveReceiptAsVoucher(InputData inputData) throws Exception {
+    public Receipt saveReceiptAsVoucher(FormDTO inputData) throws Exception {
         Receipt newReceipt = new Receipt();
         newReceipt.generateUUIDForVoucher();
-        newReceipt.totalPlastic = inputData.plastic;
-        newReceipt.totalGlass = inputData.glass;
-        newReceipt.totalMetal = inputData.metal;
+        newReceipt.totalPlastic = inputData.getPlastic();
+        newReceipt.totalGlass = inputData.getGlass();
+        newReceipt.totalMetal = inputData.getMetal();
         newReceipt.totalPrice = 0.5 * (newReceipt.totalGlass + newReceipt.totalMetal + newReceipt.totalPlastic);
         newReceipt.localDateTime = LocalDateTime.now();
         Receipt savedReceipt = receiptRepo.save(newReceipt);
@@ -92,15 +90,6 @@ public class ReceiptService {
         pdfPrintService.printPdf(filePath);
 
         return savedReceipt;
-    }
-
-    private void printReceipt(Receipt receipt) throws PrinterException {
-        PrinterJob printerJob = PrinterJob.getPrinterJob();
-        printerJob.setPrintable(new ReceiptPrintable(receipt));
-
-        if (printerJob.printDialog()) {
-            printerJob.print();
-        }
     }
 
     public Receipt updateReceipt(Receipt receipt) {

@@ -1,14 +1,13 @@
 package ro.buza.returo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
+import ro.buza.returo.dto.FormDTO;
 import ro.buza.returo.entities.Receipt;
-import ro.buza.returo.services.InputData;
 import ro.buza.returo.services.ReceiptService;
 
 import java.awt.image.BufferedImage;
@@ -19,12 +18,15 @@ import java.util.NoSuchElementException;
 @RequestMapping("/barcodes")
 @CrossOrigin
 public class BarcodesControllers {
-    @Autowired
-    ReceiptService receiptService;
+    private final ReceiptService receiptService;
+
+    public BarcodesControllers(ReceiptService receiptService) {
+        this.receiptService = receiptService;
+    }
 
     @PostMapping("/qr")
     @ResponseBody
-    public ResponseEntity<Receipt> qrCodeGen(@RequestBody InputData inputData) throws Exception {
+    public ResponseEntity<Receipt> qrCodeGen(@RequestBody FormDTO inputData) throws Exception {
         try {
             Receipt newReceipt = receiptService.saveReceiptAsVoucher(inputData);
 

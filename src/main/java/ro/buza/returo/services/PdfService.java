@@ -29,7 +29,6 @@ public class PdfService {
     @Value("${returo.receipt.path}")
     String receiptPath;
 
-    @Autowired
     public PdfService(ReceiptRepo receiptRepo) {
         this.receiptRepo = receiptRepo;
     }

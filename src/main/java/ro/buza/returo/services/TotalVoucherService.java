@@ -16,17 +16,17 @@ import java.util.Optional;
 
 @Service
 public class TotalVoucherService {
+    private final ReceiptRepo receiptRepo;
+    private final TotalVoucherRepo totalVoucherRepo;
+    private final PdfService pdfService;
+    private final PdfPrintService pdfPrintService;
+
     public TotalVoucherService(ReceiptRepo receiptRepo, TotalVoucherRepo totalVoucherRepo, PdfService pdfService, PdfPrintService pdfPrintService) {
         this.receiptRepo = receiptRepo;
         this.totalVoucherRepo = totalVoucherRepo;
         this.pdfService = pdfService;
         this.pdfPrintService = pdfPrintService;
     }
-
-    private final ReceiptRepo receiptRepo;
-    private final TotalVoucherRepo totalVoucherRepo;
-    private final PdfService pdfService;
-    private final PdfPrintService pdfPrintService;
 
     public List<TotalVoucher> getAllVouchers() {
         return totalVoucherRepo.findAll();
