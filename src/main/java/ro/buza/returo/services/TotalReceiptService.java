@@ -48,8 +48,9 @@ public class TotalReceiptService {
 
         Optional<TotalReceipt> existingTotalReceipt = totalReceiptRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
 
+        TotalReceipt totalReceipt;
         if (existingTotalReceipt.isPresent()) {
-            TotalReceipt totalReceipt = existingTotalReceipt.get();
+            totalReceipt = existingTotalReceipt.get();
 
             totalReceipt.totalGlass = 0;
             totalReceipt.totalPlastic = 0;
@@ -57,39 +58,32 @@ public class TotalReceiptService {
             totalReceipt.totalPrice = 0;
             totalReceipt.localDateTime = LocalDateTime.now();
 
-            for (Receipt receipt : receipts) {
-                if (receipt.uuid == null) {
-                    totalReceipt.totalMetal += receipt.totalMetal;
-                    totalReceipt.totalPlastic += receipt.totalPlastic;
-                    totalReceipt.totalGlass += receipt.totalGlass;
-                    totalReceipt.totalPrice += receipt.totalPrice;
-                }
-            }
-            TotalReceipt savedTotalReceipt = totalReceiptRepo.save(totalReceipt);
-
-            String filePath = pdfService.generateDailyTotalPdf(savedTotalReceipt);
-
-            pdfPrintService.printPdf(filePath);
-
-            return savedTotalReceipt;
         } else {
-            TotalReceipt totalReceipt = new TotalReceipt(LocalDateTime.now());
+            totalReceipt = new TotalReceipt(LocalDateTime.now());
 
-            for (Receipt receipt : receipts) {
-                if (receipt.uuid == null) {
-                    totalReceipt.totalMetal += receipt.totalMetal;
-                    totalReceipt.totalPlastic += receipt.totalPlastic;
-                    totalReceipt.totalGlass += receipt.totalGlass;
-                    totalReceipt.totalPrice += receipt.totalPrice;
-                }
+        }
+        return getTotalReceipt(receipts, totalReceipt);
+    }
+
+    private TotalReceipt getTotalReceipt(List<Receipt> receipts, TotalReceipt totalReceipt) throws IOException, PrinterException {
+        buildTotalReceipt(receipts, totalReceipt);
+        TotalReceipt savedTotalReceipt = totalReceiptRepo.save(totalReceipt);
+
+        String filePath = pdfService.generateDailyTotalPdf(savedTotalReceipt);
+
+        pdfPrintService.printPdf(filePath);
+
+        return savedTotalReceipt;
+    }
+
+    private void buildTotalReceipt(List<Receipt> receipts, TotalReceipt totalReceipt) {
+        for (Receipt receipt : receipts) {
+            if (receipt.uuid == null) {
+                totalReceipt.totalMetal += receipt.totalMetal;
+                totalReceipt.totalPlastic += receipt.totalPlastic;
+                totalReceipt.totalGlass += receipt.totalGlass;
+                totalReceipt.totalPrice += receipt.totalPrice;
             }
-            TotalReceipt savedTotalReceipt = totalReceiptRepo.save(totalReceipt);
-
-            String filePath = pdfService.generateDailyTotalPdf(savedTotalReceipt);
-
-            pdfPrintService.printPdf(filePath);
-
-            return savedTotalReceipt;
         }
     }
 
@@ -101,14 +95,7 @@ public class TotalReceiptService {
 
         TotalReceipt totalReceipt = new TotalReceipt(LocalDateTime.now());
 
-        for (Receipt receipt : receipts) {
-            if (receipt.uuid == null) {
-                totalReceipt.totalMetal += receipt.totalMetal;
-                totalReceipt.totalPlastic += receipt.totalPlastic;
-                totalReceipt.totalGlass += receipt.totalGlass;
-                totalReceipt.totalPrice += receipt.totalPrice;
-            }
-        }
+        buildTotalReceipt(receipts, totalReceipt);
         String filePath = pdfService.generateDailyPartialTotalPdf(totalReceipt);
 
         pdfPrintService.printPdf(filePath);

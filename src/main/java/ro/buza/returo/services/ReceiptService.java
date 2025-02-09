@@ -61,7 +61,7 @@ public class ReceiptService {
 
     public Receipt saveReceipt(FormDTO inputData) throws DocumentException, IOException, PrinterException {
         Receipt newReceipt = new Receipt();
-        constructReceipt(newReceipt, inputData);
+        buildReceipt(newReceipt, inputData);
         Receipt savedReceipt = receiptRepo.save(newReceipt);
 
         String filePath = pdfService.generateReceiptPdf(savedReceipt);
@@ -74,7 +74,7 @@ public class ReceiptService {
     public Receipt saveReceiptAsVoucher(FormDTO inputData) throws Exception {
         Receipt newReceipt = new Receipt();
         newReceipt.generateUUIDForVoucher();
-        constructReceipt(newReceipt, inputData);
+        buildReceipt(newReceipt, inputData);
         Receipt savedReceipt = receiptRepo.save(newReceipt);
 
         String filePath = pdfService.generateReceiptVoucherPdf(savedReceipt);
@@ -84,7 +84,7 @@ public class ReceiptService {
         return savedReceipt;
     }
 
-    private void constructReceipt(Receipt newReceipt, FormDTO inputData) {
+    private void buildReceipt(Receipt newReceipt, FormDTO inputData) {
         newReceipt.totalPlastic = inputData.getPlastic();
         newReceipt.totalGlass = inputData.getGlass();
         newReceipt.totalMetal = inputData.getMetal();

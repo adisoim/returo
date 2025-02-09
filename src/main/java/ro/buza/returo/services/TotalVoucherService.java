@@ -66,8 +66,9 @@ public class TotalVoucherService {
 
         Optional<TotalVoucher> existingTotalVoucher = totalVoucherRepo.findByLocalDateTimeBetween(startOfDay, endOfDay);
 
+        TotalVoucher totalVoucher;
         if (existingTotalVoucher.isPresent()) {
-            TotalVoucher totalVoucher = existingTotalVoucher.get();
+            totalVoucher = existingTotalVoucher.get();
 
             totalVoucher.totalGlass = 0;
             totalVoucher.totalPlastic = 0;
@@ -78,44 +79,31 @@ public class TotalVoucherService {
             totalVoucher.totalPriceOfReturnedVouchers = 0;
             totalVoucher.localDateTime = LocalDateTime.now();
 
-            for (Receipt receipt : receiptsGenerated) {
-                if (receipt.uuid != null) {
-                    totalVoucher.totalMetal += receipt.totalMetal;
-                    totalVoucher.totalPlastic += receipt.totalPlastic;
-                    totalVoucher.totalGlass += receipt.totalGlass;
-                    totalVoucher.totalPrice += receipt.totalPrice;
-                    totalVoucher.totalVouchers++;
-                }
-            }
-
-            for (Receipt receipt : receiptsReturned) {
-                if (receipt.getLocalDateTimeOfReturn() != null && receipt.isUsed() && receipt.uuid != null) {
-                    totalVoucher.totalReturnedVouchers++;
-                    totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
-                }
-            }
-            return totalVoucher;
         } else {
-            TotalVoucher totalVoucher = new TotalVoucher(LocalDateTime.now());
+            totalVoucher = new TotalVoucher(LocalDateTime.now());
 
-            for (Receipt receipt : receiptsGenerated) {
-                if (receipt.uuid != null) {
-                    totalVoucher.totalMetal += receipt.totalMetal;
-                    totalVoucher.totalPlastic += receipt.totalPlastic;
-                    totalVoucher.totalGlass += receipt.totalGlass;
-                    totalVoucher.totalPrice += receipt.totalPrice;
-                    totalVoucher.totalVouchers++;
-                }
-            }
-
-            for (Receipt receipt : receiptsReturned) {
-                if (receipt.getLocalDateTimeOfReturn() != null && receipt.isUsed() && receipt.uuid != null) {
-                    totalVoucher.totalReturnedVouchers++;
-                    totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
-                }
-            }
-            return totalVoucher;
         }
+        return getTotalVoucher(receiptsReturned, receiptsGenerated, totalVoucher);
+    }
+
+    private TotalVoucher getTotalVoucher(List<Receipt> receiptsReturned, List<Receipt> receiptsGenerated, TotalVoucher totalVoucher) {
+        for (Receipt receipt : receiptsGenerated) {
+            if (receipt.uuid != null) {
+                totalVoucher.totalMetal += receipt.totalMetal;
+                totalVoucher.totalPlastic += receipt.totalPlastic;
+                totalVoucher.totalGlass += receipt.totalGlass;
+                totalVoucher.totalPrice += receipt.totalPrice;
+                totalVoucher.totalVouchers++;
+            }
+        }
+
+        for (Receipt receipt : receiptsReturned) {
+            if (receipt.getLocalDateTimeOfReturn() != null && receipt.isUsed() && receipt.uuid != null) {
+                totalVoucher.totalReturnedVouchers++;
+                totalVoucher.totalPriceOfReturnedVouchers += receipt.totalPrice;
+            }
+        }
+        return totalVoucher;
     }
 
     public TotalVoucher updateTotalVoucher(TotalVoucher totalVoucher) {
@@ -126,5 +114,4 @@ public class TotalVoucherService {
     public void deleteTotalVoucherById(Integer id) {
         totalVoucherRepo.deleteById(id);
     }
-
 }
